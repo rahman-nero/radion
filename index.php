@@ -39,16 +39,14 @@ switch ($action) {
 }
 
 
-
 function stop($pid)
 {
     if (!$pid) {
         print_n('Вы ничего не запустили, чтобы завершать');
+        exit();
     }
 
-    exec('pkill -TERM -P' . $pid);
-//    posix_kill($pid, SIG_ERR);
-
+    exec('pkill -TERM -P ' . $pid);
     unlink(PATH_TO_PID);
 }
 
@@ -58,31 +56,29 @@ function help()
 }
 
 
-
-// Код родительского процесса
-if ($pid) {
-    pcntl_wait($status);
-    exit();
-}
-
 function play($pid)
 {
-    $pid = pcntl_fork();
+    global $urls;
 
-    if ($pid == -1) {
+    if ($pid) {
+        exec('pkill -TERM -P ' . $pid);
+    }
+
+    $childPid = pcntl_fork();
+
+    if ($childPid == -1) {
         die('Не удалось породить дочерний процесс');
     }
 
-    if ($pid) {
-        exec('kill ' . $pid);
+    // Код родительского процесса
+    if ($childPid) {
+        pcntl_wait($status);
+        exit();
     }
 
     file_put_contents('pid', getmypid());
 
-// Код дочернего процесса
-    exec('mpv --start=03:10 --no-video ' . $urls[0][0] . ' 2>&1', $output);
-}
-
-    pcntl_exec('./bash.sh', ['--start=03:10', '--no-video', $urls[0][0]]);
+    // Код дочернего процесса
+    system("mpv --start=00:10  --no-video {$urls[0][0]}");
 }
 
