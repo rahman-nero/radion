@@ -1,0 +1,14 @@
+{
+  "require": {
+    "vlucas/phpdotenv": "^v5.4.1",
+    "symfony/var-dumper": "~6.2.x-dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nero\\" : "src"
+    },
+    "files": [
+      "functions.php"
+    ]
+  }
+}

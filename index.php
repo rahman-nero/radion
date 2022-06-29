@@ -1,6 +1,8 @@
 <?php
 
-require_once 'functions.php';
+use Dotenv\Dotenv;
+
+require_once 'vendor/autoload.php';
 
 /**
  * @require libraries
@@ -8,24 +10,26 @@ require_once 'functions.php';
  * dunstify
  */
 
-const DEFAULT_ICON = '~/.config/dunst/icons/radio.png';
-const PATH_TO_PID = './pid';
 
-$urls = [
-    ['https://www.youtube.com/watch?v=znZiSZHcQaU', '1. Female Nightcore Mix 2022', DEFAULT_ICON],
-    ['https://www.youtube.com/watch?v=CmycNy581Oc', '2. Nightcore top 20 music', DEFAULT_ICON],
-    ['https://www.youtube.com/watch?v=5Ux-2RSNX-8', '3. Horror. Nightcore', DEFAULT_ICON],
-    ['https://www.youtube.com/watch?v=IEQDvaXBxp8', '4. Horror. Nightcore pt 3', DEFAULT_ICON],
-    ['https://www.youtube.com/watch?v=5qap5aO4i9A', '5. Lo-Fi radio', DEFAULT_ICON],
-    ['https://www.youtube.com/watch?v=kgx4WGK0oNU', '6. jazz/lofi hip hop radio', DEFAULT_ICON],
-];
+//$urls = [
+//    ['https://www.youtube.com/watch?v=znZiSZHcQaU', '1. Female Nightcore Mix 2022', DEFAULT_ICON],
+//    ['https://www.youtube.com/watch?v=CmycNy581Oc', '2. Nightcore top 20 music', DEFAULT_ICON],
+//    ['https://www.youtube.com/watch?v=5Ux-2RSNX-8', '3. Horror. Nightcore', DEFAULT_ICON],
+//    ['https://www.youtube.com/watch?v=IEQDvaXBxp8', '4. Horror. Nightcore pt 3', DEFAULT_ICON],
+//    ['https://www.youtube.com/watch?v=5qap5aO4i9A', '5. Lo-Fi radio', DEFAULT_ICON],
+//    ['https://www.youtube.com/watch?v=kgx4WGK0oNU', '6. jazz/lofi hip hop radio', DEFAULT_ICON],
+//];
 
-$pidFile = file_exists(PATH_TO_PID) ? file_get_contents(PATH_TO_PID) : null;
+$dotenv = Dotenv::createMutable('./');
+$envs = $dotenv->load();
+
+$pidFile = file_exists($envs['PID_PATH']) ? file_get_contents($envs['PID_PATH']) : null;
 
 $action = $argv[1];
 
 switch ($action) {
     case 'play':
+    case 'start':
         play($pidFile);
         break;
 
@@ -55,7 +59,6 @@ function help()
     print_n('Help будешь просить у своего отца');
 }
 
-
 function play($pid)
 {
     global $urls;
@@ -64,21 +67,5 @@ function play($pid)
         exec('pkill -TERM -P ' . $pid);
     }
 
-    $childPid = pcntl_fork();
-
-    if ($childPid == -1) {
-        die('Не удалось породить дочерний процесс');
-    }
-
-    // Код родительского процесса
-    if ($childPid) {
-        pcntl_wait($status);
-        exit();
-    }
-
-    file_put_contents('pid', getmypid());
-
-    // Код дочернего процесса
-    system("mpv --start=00:10  --no-video {$urls[0][0]}");
 }
 
