@@ -1,6 +1,6 @@
 {
   "name" : "rahman/radion",
-  "description": "Multifunctional player",
+  "description": "Multifunctional cli-player",
   "keywords": ["Player", "streaming song", "player song"],
   "license": "MIT",
   "authors": [
