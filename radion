@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 use Dotenv\Dotenv;
@@ -13,17 +14,15 @@ require_once 'vendor/autoload.php';
 $dotenv = Dotenv::createMutable('./');
 $envs = $dotenv->load();
 
-$m = $argv[1];
-$action = $argv[1];
+$action = $argv[1] ?? null;
+
 
 switch ($action) {
     case 'play':
     case 'start':
-        play($pidFile);
         break;
 
     case 'stop':
-        stop($pidFile);
         break;
 
     default:
@@ -32,25 +31,26 @@ switch ($action) {
 }
 
 
-function stop($pid)
-{
-    if (!$pid) {
-        print_n('Вы ничего не запустили, чтобы завершать');
-        exit();
-    }
-
-    exec('pkill -TERM -P ' . $pid);
-    unlink(PATH_TO_PID);
-}
 
 function help()
 {
     print_n(<<<HELP
-    radion - 
-
-
-
-
+    
+    Name:
+        radion - multi-function player for songs
+    
+    Description:     
+        radion - it is multi-functional player for play song from resources (Youtube, files, etc)
+    
+    Examples:
+    
+    "radion play|start" - play song  
+    "radion stop" - stop current playing song  
+    "radion next" - play next song  
+    "radion prev" - play prev song
+    
+    Author:
+        Rahman Dikaev
     HELP);
 }
 
