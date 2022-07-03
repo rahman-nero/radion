@@ -1,6 +1,21 @@
 {
+  "name" : "rahman/radion",
+  "description": "Multifunctional player",
+  "keywords": ["Player", "streaming song", "player song"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rahman Dikaev",
+      "email": "obitel_zero@protonmail.com"
+    }
+  ],
   "require": {
-    "vlucas/phpdotenv": "^v5.4.1",
+    "php": "~8.0",
+    "vlucas/phpdotenv": "^v5.4.1"
+  },
+
+  "require-dev": {
+    "phpunit/phpunit": "9.5.*",
     "symfony/var-dumper": "~6.2.x-dev"
   },
   "autoload": {

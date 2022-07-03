@@ -6,13 +6,18 @@ use Nero\Contracts\RadioInterface;
 
 final class FileRadio implements RadioInterface
 {
-    public function __construct()
-    {
+    private array $list;
 
+    public function __construct(array $list)
+    {
+        $this->list = $list;
     }
 
     public function play()
     {
+        $pidFile = file_exists($envs['PID_PATH']) ? file_get_contents($envs['PID_PATH']) : null;
+
+
         file_put_contents('pid', getmypid());
 
         // Код дочернего процесса
@@ -24,21 +29,18 @@ final class FileRadio implements RadioInterface
 
     public function stop()
     {
-        // TODO: Implement stop() method.
     }
 
     public function next()
     {
-        // TODO: Implement next() method.
     }
 
     public function prev()
     {
-        // TODO: Implement prev() method.
     }
 
-    public function getList()
+    public function getList(): array
     {
-        // TODO: Implement getList() method.
+        return $this->list;
     }
 }
