@@ -23,7 +23,7 @@
       "Radion\\" : "src"
     },
     "files": [
-      "functions.php"
+      "helpers/functions.php"
     ]
   }
 }

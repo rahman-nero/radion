@@ -18,7 +18,9 @@ $envs = $dotenv->load();
 
 $action = $argv[1] ?? null;
 
+
 $radion = new Radion($envs);
+
 
 switch ($action) {
     case 'play':
@@ -42,7 +44,6 @@ switch ($action) {
         help();
         break;
 }
-
 
 
 function help()
