@@ -4,9 +4,9 @@ namespace Radion\Contracts;
 
 interface RadioInterface
 {
-    public function play();
-    public function stop();
-    public function next();
-    public function prev();
-    public function getList();
+    public function play(): void;
+    public function stop(): void;
+    public function next(): void;
+    public function prev(): void;
+    public function getList(): array;
 }

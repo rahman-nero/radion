@@ -1,8 +1,11 @@
 <?php
 
-namespace Radion;
+declare(strict_types=1);
+
+namespace Radion\Implements;
 
 use Radion\Contracts\RadioInterface;
+use RuntimeException;
 
 final class MPVRadio implements RadioInterface
 {
@@ -15,35 +18,33 @@ final class MPVRadio implements RadioInterface
         $this->envs = $envs;
     }
 
-    public function play()
+    public function play(): void
     {
         file_put_contents($this->envs['PID_PATH'], getmypid());
-
-        system("mpv --start=00:10  --no-video {$this->list[0][0]}");
+        system("mpv --no-video {$this->list[0][0]}");
     }
 
-    public function stop()
+    public function stop(): void
     {
         $sessionPid = file_exists($this->envs['PID_PATH'])
             ? file_get_contents($this->envs['PID_PATH'])
             : null;
 
-        if (!$sessionPid) {
-            throw new \RuntimeException('Нет воспроизводящей песни чтобы остановить');
+        if ($sessionPid) {
+            exec("pkill -TERM -P {$sessionPid}");
         }
-
-        exec("pkill -TERM -P {$sessionPid}");
     }
 
-    public function next()
+    public function next(): void
     {
     }
 
-    public function prev()
+    public function prev(): void
     {
     }
 
-    public function getList()
+    public function getList(): array
     {
+        return $this->list;
     }
 }

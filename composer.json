@@ -20,7 +20,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Radion\\" : "src"
+      "Radion\\" : "src",
+      "Tests\\" : "tests"
     },
     "files": [
       "helpers/functions.php"

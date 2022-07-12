@@ -1,7 +1,8 @@
 <?php
 
-namespace Radion;
+declare(strict_types=1);
 
+namespace Radion;
 
 use RuntimeException;
 
@@ -10,12 +11,14 @@ final class Radion
     /**
      * @var array
      */
-    const REQUIRE_ENVS = ['LISTS_PATH', 'PID_PATH'];
+    const REQUIRE_ENVS = ['LISTS_PATH', 'PID_PATH', 'DB_PATH'];
 
     /**
      * @var array
      */
     private readonly array $lists;
+
+    private Db $db;
 
     /**
      * @var array
@@ -36,6 +39,7 @@ final class Radion
      */
     private function boot(): void
     {
+        $this->db = new Db($this->envs['DB_PATH']);
         $this->parseListFile();
     }
 
@@ -44,14 +48,15 @@ final class Radion
      */
     private function initEnvs(array $envs): void
     {
-        // Проверка на существование нужных переменных окружения
+        // Check for exists required parameters
         foreach (self::REQUIRE_ENVS as $env) {
             if (!array_key_exists($env, $envs)) {
 
                 throw new RuntimeException(<<<TEXT
-                    Пожалуйста, заполните .env файл необходимыми параметрами:
+                    Please fill in the .env file with the required parameters:
                     LISTS_PATH
-                    PID_PATH 
+                    PID_PATH
+                    DB_PATH
                 TEXT);
 
             }
@@ -61,60 +66,96 @@ final class Radion
     }
 
     /**
-     * 1. Остановить прошлый сеанс если запущен
+     * Start song
+     *
+     * @return void
      */
     public function play(): void
     {
-        // Получение тип который будет воспроизводиться
-        $type = array_key_first($this->lists);
+        // Getting play's "type"
+        if (!$type = $this->db->getType()) {
+            $type = array_key_first($this->lists);
+        }
+
         $currentList = $this->lists[$type];
 
-        // Остановить прошлый сеанс если запущен
+        // Stop old song session
         $this->stop(RadioEnum::from($type));
 
-        // Получаем объект реализаций для конкретного типа плеера
+        // Get concrete implements of player
         $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
 
         $object->play();
     }
 
+    /**
+     * Stop song
+     *
+     * @param RadioEnum|null $type
+     * @return void
+     */
     public function stop(RadioEnum $type = null): void
     {
-        // Если не указан конкретный тип плеера который нужно завершить
         if (!$type) {
             $this->fallbackStop();
             return;
         }
 
+
+
         $currentList = $this->lists[$type->value];
 
-        // Получаем объект реализаций для конкретного типа плеера
+        // Get concrete implements of player
         $object = RadioFactory::make($type, $this->envs, $currentList);
 
+        // Stopping song
         $object->stop();
     }
 
     public function next(): void
     {
+        // Get play's "type"
+        $type = $this->db->getType()
+            ?? array_key_first($this->lists) ;
 
+        $currentList = $this->lists[$type];
+
+        // Stop old song session
+        $this->stop(RadioEnum::from($type));
+
+        // Get concrete implements of player
+        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
+
+        $object->next();
     }
 
     public function prev(): void
     {
+        // Get play's "type"
+        $type = $this->db->getType()
+            ?? array_key_first($this->lists) ;
 
+        $currentList = $this->lists[$type];
+
+        // Stop old song session
+        $this->stop(RadioEnum::from($type));
+
+        // Get concrete implements of player
+        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
+
+        $object->prev();
     }
 
     public function getAllLists()
     {
-
+        return $this->lists;
     }
 
+    /**
+     * Parse the file containing the lists
+    */
     private function parseListFile(): void
     {
-        if (!array_key_exists('LISTS_PATH', $this->envs)) {
-            throw new RuntimeException('Env "LISTS_PATH" not defined');
-        }
-
         if (!file_exists($this->envs['LISTS_PATH'])) {
             throw new RuntimeException('File lists.json is not exists');
         }
@@ -124,13 +165,12 @@ final class Radion
         $this->lists = (array)$parsedLists;
     }
 
-
     /**
-     * Если не указан конкретный тип плеера который нужно завершить, то просто завершаем убивая процесс
+     * If the specific type of player to be terminated is not specified, then simply terminate by killing the process
      *
      * @return void
      */
-    protected function fallbackStop(): void
+    private function fallbackStop(): void
     {
         $sessionPid = file_exists($this->envs['PID_PATH'])
             ? file_get_contents($this->envs['PID_PATH'])
@@ -142,6 +182,5 @@ final class Radion
 
         exec("pkill -TERM -P {$sessionPid}");
     }
-
 
 }
