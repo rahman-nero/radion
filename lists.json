@@ -7,7 +7,7 @@
     ["https://www.youtube.com/watch?v=5qap5aO4i9A", "5. Lo-Fi radio"],
     ["https://www.youtube.com/watch?v=kgx4WGK0oNU", "6. jazz/lofi hip hop radio"]
   ],
-  "files" : [
+  "directory" : [
     "~/HDD/Music",
     "~/HDD/Other"
   ]

@@ -1,8 +1,8 @@
 <?php
 
-namespace Nero;
+namespace Radion;
 
-use Nero\Contracts\RadioInterface;
+use Radion\Contracts\RadioInterface;
 
 final class FileRadio implements RadioInterface
 {

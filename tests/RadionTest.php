@@ -3,15 +3,20 @@
 namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use Radion\Radion;
 
-final class MainFunctionalTest extends TestCase
+final class RadionTest extends TestCase
 {
     /**
      * Воспроизведение песни
     */
     public function testPlaySongSuccess()
     {
+        $radion = new Radion();
 
+        $radion->play();
+
+        $this->assertFileExists('db.json');
     }
 
 

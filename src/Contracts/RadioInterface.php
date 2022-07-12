@@ -1,6 +1,6 @@
 <?php
 
-namespace Nero\Contracts;
+namespace Radion\Contracts;
 
 interface RadioInterface
 {

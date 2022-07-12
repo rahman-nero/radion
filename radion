@@ -2,6 +2,7 @@
 <?php
 
 use Dotenv\Dotenv;
+use Radion\Radion;
 
 require_once 'vendor/autoload.php';
 
@@ -11,18 +12,30 @@ require_once 'vendor/autoload.php';
  * dunstify
  */
 
+// Initialize parser env variables
 $dotenv = Dotenv::createMutable('./');
 $envs = $dotenv->load();
 
 $action = $argv[1] ?? null;
 
+$radion = new Radion($envs);
 
 switch ($action) {
     case 'play':
     case 'start':
+        $radion->play();
         break;
 
     case 'stop':
+        $radion->stop();
+        break;
+
+    case 'next':
+        $radion->next();
+        break;
+
+    case 'prev':
+        $radion->prev();
         break;
 
     default:
