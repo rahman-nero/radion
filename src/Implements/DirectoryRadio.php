@@ -12,7 +12,7 @@ final class DirectoryRadio implements RadioInterface
     private array $envs;
     private array $list;
 
-    public function __construct(Db $db, array $list, array $envs)
+    public function __construct(array $list, array $envs)
     {
         $this->list = $list;
         $this->envs = $envs;
@@ -20,11 +20,12 @@ final class DirectoryRadio implements RadioInterface
 
     public function play(): void
     {
-
+        dump(__METHOD__, 'Вызвали локальную песню');
     }
 
     public function stop(): void
     {
+        dump(__METHOD__, 'Завершили локальную песню');
     }
 
     public function next(): void

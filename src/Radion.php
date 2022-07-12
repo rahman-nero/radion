@@ -14,11 +14,14 @@ final class Radion
     const REQUIRE_ENVS = ['LISTS_PATH', 'PID_PATH', 'DB_PATH'];
 
     /**
+     * @var Db
+     */
+    private Db $db;
+
+    /**
      * @var array
      */
     private readonly array $lists;
-
-    private Db $db;
 
     /**
      * @var array
@@ -80,12 +83,17 @@ final class Radion
         $currentList = $this->lists[$type];
 
         // Stop old song session
-        $this->stop(RadioEnum::from($type));
+        $this->stop();
 
         // Get concrete implements of player
         $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
 
+        // Записать в radion.json
+        $this->db->writeType($type);
+
         $object->play();
+
+        // code is not working, process is busy
     }
 
     /**
@@ -94,19 +102,18 @@ final class Radion
      * @param RadioEnum|null $type
      * @return void
      */
-    public function stop(RadioEnum $type = null): void
+    public function stop(): void
     {
-        if (!$type) {
+        // Getting play's "type"
+        if (!$type = $this->db->getType()) {
             $this->fallbackStop();
             return;
         }
 
-
-
-        $currentList = $this->lists[$type->value];
+        $currentList = $this->lists[$type];
 
         // Get concrete implements of player
-        $object = RadioFactory::make($type, $this->envs, $currentList);
+        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
 
         // Stopping song
         $object->stop();
@@ -114,36 +121,11 @@ final class Radion
 
     public function next(): void
     {
-        // Get play's "type"
-        $type = $this->db->getType()
-            ?? array_key_first($this->lists) ;
 
-        $currentList = $this->lists[$type];
-
-        // Stop old song session
-        $this->stop(RadioEnum::from($type));
-
-        // Get concrete implements of player
-        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
-
-        $object->next();
     }
 
     public function prev(): void
     {
-        // Get play's "type"
-        $type = $this->db->getType()
-            ?? array_key_first($this->lists) ;
-
-        $currentList = $this->lists[$type];
-
-        // Stop old song session
-        $this->stop(RadioEnum::from($type));
-
-        // Get concrete implements of player
-        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
-
-        $object->prev();
     }
 
     public function getAllLists()
