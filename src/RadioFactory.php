@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Radion;
 
 use Radion\Contracts\RadioInterface;
-use Radion\Implements\{DirectoryRadio, MPVRadio};
+use Radion\Implements\{LocalSong, YoutubeRadio};
 
 abstract class RadioFactory
 {
@@ -15,8 +15,8 @@ abstract class RadioFactory
         $db = new Db($envs['DB_PATH']);
 
         return match ($type) {
-            RadioEnum::MPV => new MPVRadio($db, $list, $envs),
-            RadioEnum::DIRECTORY => new DirectoryRadio($db, $list, $envs)
+            RadioEnum::YOUTUBE_SONG => new YoutubeRadio($db, $list, $envs),
+            RadioEnum::LOCAL_SONG => new LocalSong($db, $list, $envs)
         };
     }
 

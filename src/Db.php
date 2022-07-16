@@ -15,7 +15,7 @@ final class Db
         $this->parseDb();
     }
 
-    public function get(string $key)
+    public function get(string $key): false|string|int
     {
         if (!$this->content || !array_key_exists($key, $this->content)) {
             return false;

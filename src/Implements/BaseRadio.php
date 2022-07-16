@@ -16,9 +16,11 @@ abstract class BaseRadio
 
     public function __construct(Db $db, array $list, array $envs)
     {
+        $this->db = $db;
         $this->list = $list;
         $this->envs = $envs;
-        $this->db = $db;
+
+        $this->boot();
     }
 
     /**
@@ -36,6 +38,11 @@ abstract class BaseRadio
     public function deletePIDFile(): bool
     {
        return unlink($this->envs['PID_PATH']);
+    }
+
+    protected function boot()
+    {
+        $this->setPID(getmypid());
     }
 
     /**
