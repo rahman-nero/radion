@@ -5,27 +5,38 @@ declare(strict_types=1);
 namespace Radion\Implements;
 
 use Radion\Contracts\RadioInterface;
-use Radion\Db;
 
-final class DirectoryRadio implements RadioInterface
+final class DirectoryRadio extends BaseRadio implements RadioInterface
 {
-    private array $envs;
-    private array $list;
-
-    public function __construct(array $list, array $envs)
-    {
-        $this->list = $list;
-        $this->envs = $envs;
-    }
+    private array $musicList = [];
 
     public function play(): void
     {
-        dump(__METHOD__, 'Вызвали локальную песню');
+        dump(__METHOD__ . '- Вызвали локальную песню');
+
+        $this->setPID(getmypid());
+        $this->parseDirectoryList();
+
+        $songPath = $this->musicList[0];
+
+        if ($lastIndex = $this->db->get('lastIndex')) {
+            $songPath = $this->musicList[$lastIndex];
+        }
+
+        system("mpg123 {$songPath}");
     }
 
     public function stop(): void
     {
-        dump(__METHOD__, 'Завершили локальную песню');
+        dump(__METHOD__ . '- Завершили локальную песню');
+        $sessionPid = file_exists($this->envs['PID_PATH'])
+            ? file_get_contents($this->envs['PID_PATH'])
+            : null;
+
+        if ($sessionPid) {
+            exec("pkill -TERM -P {$sessionPid}");
+            $this->deletePIDFile();
+        }
     }
 
     public function next(): void
@@ -36,8 +47,20 @@ final class DirectoryRadio implements RadioInterface
     {
     }
 
-    public function getList(): array
+    private function parseDirectoryList(): void
     {
-        return $this->list;
+        $lists = $this->list;
+        $files = [];
+
+        foreach ($lists as $directory) {
+            $directory = rtrim($directory, '/');
+            $parsedFiles = glob($directory . '/*.mp3');
+
+            count($parsedFiles) > 0
+                ? $files = [...$files, ...$parsedFiles]
+                : null;
+        }
+
+        $this->musicList = $files;
     }
 }

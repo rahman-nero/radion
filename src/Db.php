@@ -15,19 +15,25 @@ final class Db
         $this->parseDb();
     }
 
-    public function writeType($type): void
+    public function get(string $key)
     {
-        $content = json_encode(['type' => $type]);
-        file_put_contents($this->path, $content);
-    }
-
-    public function getType(): string|false
-    {
-        if (!$this->content) {
+        if (!$this->content || !array_key_exists($key, $this->content)) {
             return false;
         }
 
-        return $this->content['type'];
+        return $this->content[$key];
+    }
+
+    public function write(array $data): void
+    {
+        $content = json_encode($data, \JSON_THROW_ON_ERROR);
+        file_put_contents($this->path, $content);
+    }
+
+    public function append(array $data)
+    {
+        $content = json_encode([...$this->content, ...$data], \JSON_THROW_ON_ERROR);
+        file_put_contents($this->path, $content);
     }
 
     private function parseDb(): void
@@ -41,5 +47,4 @@ final class Db
 
         $this->content = (array) $content;
     }
-
 }

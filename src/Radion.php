@@ -76,7 +76,7 @@ final class Radion
     public function play(): void
     {
         // Getting play's "type"
-        if (!$type = $this->db->getType()) {
+        if (!$type = $this->db->get('type')) {
             $type = array_key_first($this->lists);
         }
 
@@ -88,8 +88,8 @@ final class Radion
         // Get concrete implements of player
         $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
 
-        // Записать в radion.json
-        $this->db->writeType($type);
+        // Write the type of playing song in db.json
+        $this->db->append(['type' => $type]);
 
         $object->play();
 
@@ -105,7 +105,7 @@ final class Radion
     public function stop(): void
     {
         // Getting play's "type"
-        if (!$type = $this->db->getType()) {
+        if (!$type = $this->db->get('type')) {
             $this->fallbackStop();
             return;
         }
@@ -164,5 +164,4 @@ final class Radion
 
         exec("pkill -TERM -P {$sessionPid}");
     }
-
 }

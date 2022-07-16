@@ -8,8 +8,8 @@ require_once 'vendor/autoload.php';
 
 /**
  * @require libraries
- * dunst
- * dunstify
+ * mpg123
+ * mpv
  */
 
 // Initialize parser env variables

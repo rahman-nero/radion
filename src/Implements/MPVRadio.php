@@ -5,22 +5,12 @@ declare(strict_types=1);
 namespace Radion\Implements;
 
 use Radion\Contracts\RadioInterface;
-use RuntimeException;
 
-final class MPVRadio implements RadioInterface
+final class MPVRadio extends BaseRadio implements RadioInterface
 {
-    private array $envs;
-    private array $list;
-
-    public function __construct(array $list, array $envs)
-    {
-        $this->list = $list;
-        $this->envs = $envs;
-    }
-
     public function play(): void
     {
-        file_put_contents($this->envs['PID_PATH'], getmypid());
+        $this->setPID(getmypid());
         system("mpv --no-video {$this->list[0][0]}");
     }
 
@@ -32,6 +22,7 @@ final class MPVRadio implements RadioInterface
 
         if ($sessionPid) {
             exec("pkill -TERM -P {$sessionPid}");
+            $this->deletePIDFile();
         }
     }
 
@@ -43,8 +34,4 @@ final class MPVRadio implements RadioInterface
     {
     }
 
-    public function getList(): array
-    {
-        return $this->list;
-    }
 }
