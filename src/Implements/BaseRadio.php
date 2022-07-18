@@ -21,6 +21,7 @@ abstract class BaseRadio
         $this->envs = $envs;
     }
 
+
     /**
      * @param string|int $pid
      * @return bool
@@ -28,16 +29,6 @@ abstract class BaseRadio
     protected function updatePID(string|int $pid): bool
     {
         return file_put_contents($this->envs['PID_PATH'], $pid) !== false;
-    }
-
-    /**
-     * @param string|int $index
-     * @return void
-     * @throws \JsonException
-     */
-    protected function updateIndex(string|int $index)
-    {
-        $this->db->write(['index' => $index]);
     }
 
     /**
@@ -55,4 +46,5 @@ abstract class BaseRadio
     {
         return $this->list;
     }
+
 }

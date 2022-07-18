@@ -76,9 +76,7 @@ final class Radion
     public function play(): void
     {
         // Index last played song
-        if (!$current = $this->db->get('index')) {
-            $current = 0;
-        }
+        $current = $this->db->get('index') ?: 0;
 
         // "https://youtube......" or "/home/user/Music/file.mp3"
         $selected = $this->lists[$current][0];
@@ -92,7 +90,9 @@ final class Radion
         // Get concrete implements of player
         $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
-        $object->play();
+        $this->db->write(['index' => $current]);
+
+        $object->play($current);
         // code is not working, process is busy
     }
 
@@ -134,17 +134,19 @@ final class Radion
     public function next(): void
     {
         // Index last played song
-        if (!$current = $this->db->get('index')) {
-            $current = 0;
+        if (($current = $this->db->get('index')) !== false) {
+            $next = $current + 1;
+        } else {
+            $next = 0;
         }
 
         // Если после этой песни нет другой песни, то просто начинаем с начала
-        if (!array_key_exists($current + 1, $this->lists)) {
-            $current = 0;
+        if (!array_key_exists($next, $this->lists)) {
+            $next = 0;
         }
 
         // "https://youtube......" or "/home/user/Music/file.mp3"
-        $selected = $this->lists[$current][0];
+        $selected = $this->lists[$next][0];
 
         // Detect type resource
         $typeRadio = $this->parseResource($selected);
@@ -155,12 +157,42 @@ final class Radion
         // Get concrete implements of player
         $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
-        $object->play();
+        $this->db->write(['index' => $next]);
+
+        $object->play($next);
         // code is not working, process is busy
     }
 
     public function prev(): void
     {
+        // Index last played song
+        if (($current = $this->db->get('index')) !== false) {
+            $next = $current - 1;
+        } else {
+            $next = 0;
+        }
+
+        // Если после этой песни нет другой песни, то просто начинаем с начала
+        if (!array_key_exists($next, $this->lists)) {
+            $next = 0;
+        }
+
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$next][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
+
+        // Stop old song session
+        $this->stopBeforePlay();
+
+        // Get concrete implements of player
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
+
+        $this->db->write(['index' => $next]);
+
+        $object->play($next);
+        // code is not working, process is busy
     }
 
     protected function parseResource(string $resource): RadioEnum
