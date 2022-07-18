@@ -10,16 +10,16 @@ final class LocalSong extends BaseRadio implements RadioInterface
 {
     public function play(): void
     {
-        dump(__METHOD__ . '- Поиск локальную песню');
+        dump(__METHOD__ . '- Запуск локальной песни');
 
-        $index = $this->db->get('index') ?? 0;
-        $current = $this->list[$index];
+        $index = $this->db->get('index') ?? 0; // Индекс песни которую нужно запустить
+        $current = $this->list[$index]; // Песню которую запускаем
 
         $resource = $current[0];
 //        $title = $current[1];
 //        $icon = $current[2];
 
-        $this->db->write(['index' => $index]);
+        $this->updateIndex($index);
 
         system("mpv --no-video {$resource}");
     }
@@ -33,7 +33,7 @@ final class LocalSong extends BaseRadio implements RadioInterface
                     : null;
 
         if ($sessionPid) {
-            system("pkill -TERM -P" . $sessionPid);
+            exec("pkill -TERM -P {$sessionPid}");
             $this->deletePIDFile();
         }
     }
@@ -44,6 +44,11 @@ final class LocalSong extends BaseRadio implements RadioInterface
 
     public function prev(): void
     {
+    }
+
+    protected function updateIndex(int $index)
+    {
+        $this->db->write(['index' => $index]);
     }
 
 }

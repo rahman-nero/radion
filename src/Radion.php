@@ -133,7 +133,30 @@ final class Radion
 
     public function next(): void
     {
+        // Index last played song
+        if (!$current = $this->db->get('index')) {
+            $current = 0;
+        }
 
+        // Если после этой песни нет другой песни, то просто начинаем с начала
+        if (!array_key_exists($current + 1, $this->lists)) {
+            $current = 0;
+        }
+
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$current][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
+
+        // Stop old song session
+        $this->stopBeforePlay();
+
+        // Get concrete implements of player
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
+
+        $object->play();
+        // code is not working, process is busy
     }
 
     public function prev(): void
