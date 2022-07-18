@@ -212,6 +212,8 @@ final class Radion
             throw new RuntimeException('Нет воспроизводящей песни чтобы остановить');
         }
 
+        dump('Удаляем с помощью fallbackStop');
+
         exec("pkill -TERM -P {$sessionPid}");
     }
 }

@@ -19,30 +19,33 @@ abstract class BaseRadio
         $this->db = $db;
         $this->list = $list;
         $this->envs = $envs;
-
-        $this->boot();
     }
 
     /**
      * @param string|int $pid
      * @return bool
      */
-    public function setPID(string|int $pid): bool
+    protected function updatePID(string|int $pid): bool
     {
         return file_put_contents($this->envs['PID_PATH'], $pid) !== false;
     }
 
     /**
-     * @return bool
-    */
-    public function deletePIDFile(): bool
+     * @param string|int $index
+     * @return void
+     * @throws \JsonException
+     */
+    protected function updateIndex(string|int $index)
     {
-       return unlink($this->envs['PID_PATH']);
+        $this->db->write(['index' => $index]);
     }
 
-    protected function boot()
+    /**
+     * @return bool
+    */
+    protected function deletePIDFile(): bool
     {
-        $this->setPID(getmypid());
+       return unlink($this->envs['PID_PATH']);
     }
 
     /**
