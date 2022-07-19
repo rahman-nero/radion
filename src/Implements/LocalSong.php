@@ -24,6 +24,9 @@ final class LocalSong extends BaseRadio implements RadioInterface
 
     public function stop(): void
     {
+
+        dump(__METHOD__ . '- Завершили локальную песню');
+
         $sessionPid = file_exists($this->envs['PID_PATH'])
             ? file_get_contents($this->envs['PID_PATH'])
             : null;

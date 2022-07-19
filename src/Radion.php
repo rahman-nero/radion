@@ -104,7 +104,7 @@ final class Radion
      */
     public function stop(): void
     {
-        if (!$current = $this->db->get('index')) {
+        if (($current = $this->db->get('index')) === false) {
             $this->fallbackStop();
             return;
         }
