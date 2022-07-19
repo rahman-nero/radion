@@ -122,6 +122,9 @@ final class Radion
         $object->stop();
     }
 
+    /**
+     * @return void
+     */
     public function stopBeforePlay()
     {
         if (!file_exists($this->envs['PID_PATH'])) {
@@ -131,6 +134,10 @@ final class Radion
         $this->stop();
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function next(): void
     {
         // Index last played song
@@ -140,7 +147,7 @@ final class Radion
             $next = 0;
         }
 
-        // Если после этой песни нет другой песни, то просто начинаем с начала
+        // If there is no other song after this song, then just start from the beginning
         if (!array_key_exists($next, $this->lists)) {
             $next = 0;
         }
@@ -157,12 +164,17 @@ final class Radion
         // Get concrete implements of player
         $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
+        // Overwriting index
         $this->db->write(['index' => $next]);
 
         $object->play($next);
         // code is not working, process is busy
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function prev(): void
     {
         // Index last played song
@@ -172,7 +184,7 @@ final class Radion
             $next = 0;
         }
 
-        // Если после этой песни нет другой песни, то просто начинаем с начала
+        // If there is no other song after this song, then just start from the beginning
         if (!array_key_exists($next, $this->lists)) {
             $next = 0;
         }
@@ -189,12 +201,17 @@ final class Radion
         // Get concrete implements of player
         $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
+        // Overwriting index
         $this->db->write(['index' => $next]);
 
         $object->play($next);
         // code is not working, process is busy
     }
 
+    /**
+     * @param string $resource
+     * @return RadioEnum
+     */
     protected function parseResource(string $resource): RadioEnum
     {
         if (filter_var($resource, \FILTER_VALIDATE_DOMAIN)) {
@@ -210,7 +227,10 @@ final class Radion
         TEXT);
     }
 
-    public function getAllLists()
+    /**
+     * @return array
+     */
+    public function getAllLists(): array
     {
         return $this->lists;
     }
@@ -243,8 +263,6 @@ final class Radion
         if (!$sessionPid) {
             throw new RuntimeException('Нет воспроизводящей песни чтобы остановить');
         }
-
-        dump('Удаляем с помощью fallbackStop');
 
         exec("pkill -TERM -P {$sessionPid}");
     }

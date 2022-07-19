@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 
-use Dotenv\Dotenv;
 use Radion\Radion;
 
 require_once 'vendor/autoload.php';
@@ -9,13 +8,14 @@ require_once 'vendor/autoload.php';
 /**
  * @require libraries
  * mpv
- *
- * 18408
  */
 
-// Initialize parser env variables
-$dotenv = Dotenv::createMutable('./');
-$envs = $dotenv->load();
+$envs = [
+    "PID_PATH" => __DIR__ . "/pid",
+    "LISTS_PATH" => __DIR__ . "/lists.json",
+    "DB_PATH" => __DIR__ . "/db.json"
+];
+
 
 $action = $argv[1] ?? null;
 
@@ -67,6 +67,7 @@ function help()
     
     Author:
         Rahman Dikaev
-    HELP);
+    HELP
+    );
 }
 

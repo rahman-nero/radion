@@ -21,7 +21,6 @@ abstract class BaseRadio
         $this->envs = $envs;
     }
 
-
     /**
      * @param string|int $pid
      * @return bool
