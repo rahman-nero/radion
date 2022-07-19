@@ -16,16 +16,17 @@ abstract class BaseRadio
 
     public function __construct(Db $db, array $list, array $envs)
     {
+        $this->db = $db;
         $this->list = $list;
         $this->envs = $envs;
-        $this->db = $db;
     }
+
 
     /**
      * @param string|int $pid
      * @return bool
      */
-    public function setPID(string|int $pid): bool
+    protected function updatePID(string|int $pid): bool
     {
         return file_put_contents($this->envs['PID_PATH'], $pid) !== false;
     }
@@ -33,7 +34,7 @@ abstract class BaseRadio
     /**
      * @return bool
     */
-    public function deletePIDFile(): bool
+    protected function deletePIDFile(): bool
     {
        return unlink($this->envs['PID_PATH']);
     }
@@ -45,4 +46,5 @@ abstract class BaseRadio
     {
         return $this->list;
     }
+
 }

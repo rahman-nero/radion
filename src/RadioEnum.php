@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Radion;
 
-enum RadioEnum: string
+enum RadioEnum
 {
-    case MPV = 'mpv';
-    case DIRECTORY = 'directory';
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
+    case YOUTUBE_SONG;
+    case LOCAL_SONG;
 }

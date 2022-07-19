@@ -75,24 +75,24 @@ final class Radion
      */
     public function play(): void
     {
-        // Getting play's "type"
-        if (!$type = $this->db->get('type')) {
-            $type = array_key_first($this->lists);
-        }
+        // Index last played song
+        $current = $this->db->get('index') ?: 0;
 
-        $currentList = $this->lists[$type];
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$current][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
 
         // Stop old song session
-        $this->stop();
+        $this->stopBeforePlay();
 
         // Get concrete implements of player
-        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
-        // Write the type of playing song in db.json
-        $this->db->append(['type' => $type]);
+        $this->db->write(['index' => $current]);
 
-        $object->play();
-
+        $object->play($current);
         // code is not working, process is busy
     }
 
@@ -104,28 +104,110 @@ final class Radion
      */
     public function stop(): void
     {
-        // Getting play's "type"
-        if (!$type = $this->db->get('type')) {
+        if (!$current = $this->db->get('index')) {
             $this->fallbackStop();
             return;
         }
 
-        $currentList = $this->lists[$type];
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$current][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
 
         // Get concrete implements of player
-        $object = RadioFactory::make(RadioEnum::from($type), $this->envs, $currentList);
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
 
         // Stopping song
         $object->stop();
     }
 
+    public function stopBeforePlay()
+    {
+        if (!file_exists($this->envs['PID_PATH'])) {
+            return;
+        }
+
+        $this->stop();
+    }
+
     public function next(): void
     {
+        // Index last played song
+        if (($current = $this->db->get('index')) !== false) {
+            $next = $current + 1;
+        } else {
+            $next = 0;
+        }
 
+        // Если после этой песни нет другой песни, то просто начинаем с начала
+        if (!array_key_exists($next, $this->lists)) {
+            $next = 0;
+        }
+
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$next][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
+
+        // Stop old song session
+        $this->stopBeforePlay();
+
+        // Get concrete implements of player
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
+
+        $this->db->write(['index' => $next]);
+
+        $object->play($next);
+        // code is not working, process is busy
     }
 
     public function prev(): void
     {
+        // Index last played song
+        if (($current = $this->db->get('index')) !== false) {
+            $next = $current - 1;
+        } else {
+            $next = 0;
+        }
+
+        // Если после этой песни нет другой песни, то просто начинаем с начала
+        if (!array_key_exists($next, $this->lists)) {
+            $next = 0;
+        }
+
+        // "https://youtube......" or "/home/user/Music/file.mp3"
+        $selected = $this->lists[$next][0];
+
+        // Detect type resource
+        $typeRadio = $this->parseResource($selected);
+
+        // Stop old song session
+        $this->stopBeforePlay();
+
+        // Get concrete implements of player
+        $object = RadioFactory::make($typeRadio, $this->envs, $this->lists);
+
+        $this->db->write(['index' => $next]);
+
+        $object->play($next);
+        // code is not working, process is busy
+    }
+
+    protected function parseResource(string $resource): RadioEnum
+    {
+        if (filter_var($resource, \FILTER_VALIDATE_DOMAIN)) {
+            return RadioEnum::YOUTUBE_SONG;
+        }
+
+        if (is_file($resource)) {
+            return RadioEnum::LOCAL_SONG;
+        }
+
+        throw new RuntimeException(<<<TEXT
+            Не удалось расшифровать как нужно воспроизводить песню, пожалуйста проверьте правильность этой строки: {$resource}
+        TEXT);
     }
 
     public function getAllLists()
@@ -161,6 +243,8 @@ final class Radion
         if (!$sessionPid) {
             throw new RuntimeException('Нет воспроизводящей песни чтобы остановить');
         }
+
+        dump('Удаляем с помощью fallbackStop');
 
         exec("pkill -TERM -P {$sessionPid}");
     }

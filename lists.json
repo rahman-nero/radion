@@ -1,14 +1,8 @@
-{
-  "mpv" : [
+[
     ["https://www.youtube.com/watch?v=znZiSZHcQaU", "1. Female Nightcore Mix 2022"],
     ["https://www.youtube.com/watch?v=CmycNy581Oc", "2. Nightcore top 20 music"],
     ["https://www.youtube.com/watch?v=5Ux-2RSNX-8", "3. Horror. Nightcore"],
     ["https://www.youtube.com/watch?v=IEQDvaXBxp8", "4. Horror. Nightcore pt 3"],
-    ["https://www.youtube.com/watch?v=5qap5aO4i9A", "5. Lo-Fi radio"],
-    ["https://www.youtube.com/watch?v=kgx4WGK0oNU", "6. jazz/lofi hip hop radio"]
-  ],
-  "directory" : [
-    "/home/obitel/HDD/Music",
-    "/home/obitel/HDD/Other"
-  ]
-}
+    ["https://www.youtube.com/watch?v=kgx4WGK0oNU", "6. jazz/lofi hip hop radio"],
+    ["/home/obitel/HDD/Music/1512144901_kaleo-way-down-we-go-www_muzonov_net.mp3"]
+]
