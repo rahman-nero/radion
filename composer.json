@@ -23,7 +23,7 @@
       "Tests\\" : "tests"
     },
     "files": [
-      "helpers/functions.php"
+      "src/helpers/functions.php"
     ]
   }
 }

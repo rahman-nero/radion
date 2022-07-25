@@ -14,10 +14,10 @@ final class LocalSong extends BaseRadio implements RadioInterface
 
         $current = $this->list[$index]; // Песню которую запускаем
 
-        $resource = $current[0];
+        $resource = addslashes($current[0]);
 //        $title = $current[1];
 
-        system("mpv --no-video {$resource}");
+        system("mpv --no-video '{$resource}'");
     }
 
     public function stop(): void
