@@ -27,6 +27,6 @@
     ]
   },
   "bin": [
-    "radion"
+    "bin/radion"
   ]
 }

@@ -78,6 +78,11 @@ final class Radion
         // Index last played song
         $current = $this->db->get('index') ?: 0;
 
+        // If last index is not exists in lists, then index default 0
+        if (!array_key_exists($current, $this->lists)) {
+            $current = 0;
+        }
+
         // "https://youtube......" or "/home/user/Music/file.mp3"
         $selected = $this->lists[$current][0];
 
@@ -107,6 +112,11 @@ final class Radion
         if (($current = $this->db->get('index')) === false) {
             $this->fallbackStop();
             return;
+        }
+
+        // If last index is not exists in lists, then index default 0
+        if (!array_key_exists($current, $this->lists)) {
+            throw new RuntimeException('Невозможно остановить не существующую песню');
         }
 
         // "https://youtube......" or "/home/user/Music/file.mp3"

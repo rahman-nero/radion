@@ -3,12 +3,11 @@
 
 use Radion\Radion;
 
-if (is_file(__DIR__.'/../../autoload.php')) {
-    include_once  __DIR__.'/../../autoload.php';
-} elseif (is_file(__DIR__.'/vendor/autoload.php')) {
-    include_once __DIR__ . '/vendor/autoload.php';
+if (is_file(__DIR__.'/../vendor/autoload.php')) {
+    require_once __DIR__.'/../vendor/autoload.php';
+} elseif (isset($_composer_autoload_path)) {
+    require_once $_composer_autoload_path;
 }
-
 
 /**
  * @require libraries
@@ -16,9 +15,9 @@ if (is_file(__DIR__.'/../../autoload.php')) {
  */
 
 $envs = [
-    "PID_PATH" => __DIR__ . "/pid",
-    "LISTS_PATH" => __DIR__ . "/lists.json",
-    "DB_PATH" => __DIR__ . "/db.json"
+    "PID_PATH" => dirname(__DIR__) . "/pid",
+    "LISTS_PATH" => dirname(__DIR__) . "/lists.json",
+    "DB_PATH" => dirname(__DIR__) . "/db.json"
 ];
 
 
