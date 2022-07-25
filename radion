@@ -24,30 +24,36 @@ $envs = [
 
 $action = $argv[1] ?? null;
 
-$radion = new Radion($envs);
-
 switch ($action) {
     case 'play':
     case 'start':
+        $radion = new Radion($envs);
+
         $radion->play();
         break;
 
     case 'stop':
+        $radion = new Radion($envs);
         $radion->stop();
         break;
 
     case 'next':
+        $radion = new Radion($envs);
         $radion->next();
         break;
 
     case 'prev':
+        $radion = new Radion($envs);
         $radion->prev();
         break;
 
     case 'add':
         $pathLists = $envs['LISTS_PATH'];
-        $resource = $argv[2] ?? throw new RuntimeException('');
+
         $title = $argv[3] ?? null;
+        $resource = !empty($argv[2])
+            ? $argv[2]
+            : throw new RuntimeException('Не передан ссылку или путь до файла');
 
         add($pathLists, $resource, $title);
         break;
@@ -57,6 +63,7 @@ switch ($action) {
         break;
 
     case 'lists':
+        $radion = new Radion($envs);
         printLists($radion->getAllLists());
         break;
     default:
@@ -77,10 +84,12 @@ function help()
     
     Examples:
     
-    "radion play|start" - play song  
-    "radion stop" - stop current playing song  
-    "radion next" - play next song  
-    "radion prev" - play prev song
+    radion play|start - play song  
+    radion stop - stop current playing song  
+    radion next - play next song  
+    radion prev - play prev song
+    radion add 'absolute_path_to_mp3 or youtube_link' 'Song title' - add song in playlist
+
     
     Author:
         Rahman Dikaev
@@ -91,6 +100,13 @@ function help()
 
 function add(string $pathLists, string $resource, ?string $title)
 {
+    if (!file_exists($pathLists)) {
+        $content = [[$resource, $title]];
+
+        file_put_contents($pathLists, json_encode($content));
+        return;
+    }
+
     $listContent = (array) json_decode(file_get_contents($pathLists));
 
     // Check on exists this resource ($resource)
