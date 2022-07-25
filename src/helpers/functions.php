@@ -8,7 +8,7 @@ function print_n($mixed)
 
 function printLists(array $lists)
 {
-    print_n("ID   Название                          Путь");
+    print_n("ID   Title                             Resource");
     print_n("--------------------------------------------------------------------------");
 
     for ($i = 0; $i < count($lists); $i++) {
@@ -17,7 +17,7 @@ function printLists(array $lists)
 
         $resource = $song[0];
 
-        $title = $song[1] ?? "Без названия";
+        $title = $song[1] ?? "Unknown Title";
 
         if (mb_strlen($title) > 30) {
             $title = mb_strcut($title, 0, 27) . '...';

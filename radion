@@ -39,6 +39,18 @@ switch ($action) {
         $radion->prev();
         break;
 
+    case 'add':
+        $pathLists = $envs['LISTS_PATH'];
+        $resource = $argv[2] ?? throw new RuntimeException('');
+        $title = $argv[3] ?? null;
+
+        add($pathLists, $resource, $title);
+        break;
+
+    case 'remove':
+
+        break;
+
     case 'lists':
         printLists($radion->getAllLists());
         break;
@@ -71,3 +83,32 @@ function help()
     );
 }
 
+
+function add(string $pathLists, string $resource, ?string $title)
+{
+    $listContent = (array) json_decode(file_get_contents($pathLists));
+
+    // Check on exists this resource ($resource)
+    $duplicate = scanForDuplicate($resource, $listContent);
+
+    // If exists duplicate of resource, then error
+    if ($duplicate) {
+        throw new RuntimeException('Такая песня уже есть в lists.json');
+    }
+
+    $newContent = [...$listContent, [$resource, $title]];
+
+    file_put_contents($pathLists, json_encode($newContent));
+}
+
+
+function scanForDuplicate(string $resource, array $content): bool
+{
+    foreach ($content as $item) {
+        if ($item[0] === $resource) {
+            return true;
+        }
+    }
+
+    return false;
+}
